@@ -1,0 +1,18 @@
+CTVHIGH,CTVLOW,BRAINSTEM,CORD,PAROTIDL,PAROTIDR,BODY,CouchSurface,CouchInterior,CouchRailLeft,CouchRailRight
+ctv_7000,ctv_5600,brainstem,spinal cord,leftparotid,rightparotid,BODY,couchsurface,CouchInterior,CouchRailLeft,CouchRailRight
+ctv_70,ctv_56,Brainstem,Spinal Cord,left parotid,right parotid,body,CouchSurface,,,
+ctv70,ctv56,BS,Spinal cord,LeftParotid,RightParotid,Body,,,,
+CTV_7000,CTV_5600,BRAINSTEM,spinal Cord,Leftparotid,Rightparotid,,,,,
+CTV_70,CTV_56,,SC,L Parotid,R Parotid,,,,,
+CTV70,CTV56,,CORD,Parotid L,Parotid R,,,,,
+CTV 70,CTV 56,,Cord,parotid_l,parotid_r,,,,,
+ctv_6500,ctv_5400,,cord,Parotid_L,Parotid_R,,,,,
+ctv_65,ctv_54,,spinalcord,,,,,,,
+ctv65,ctv54,,,,,,,,,
+CTV_6500,CTV_5400,,,,,,,,,
+CTV_65,CTV_54,,,,,,,,,
+CTV65,CTV54,,,,,,,,,
+CTV 65,CTV 54,,,,,,,,,
+CTV60,CTV54combi,,,,,,,,,
+CTVp,CTVn,,,,,,,,,
+CTV65 combined,CTV2,,,,,,,,,
