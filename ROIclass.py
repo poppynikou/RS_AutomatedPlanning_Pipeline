@@ -39,16 +39,20 @@ class ROI():
 
         return dicom_distance
 
-    def import_and_filter_CTVs(self, path, rois_to_keep, names):
+    def import_and_filter_CTVs(self, path, names):
 
         structure_set = StructureSet(path)
         roi_list = structure_set.get_roi_names()
+        list_rois_to_keep = [item for key in names.keys() for item in names[key]]
 
-        rois_to_remove = [roi for roi in roi_list if roi not in rois_to_keep]
+        # assumes there are only two CTV structures 
+        rois_to_remove = [roi for roi in roi_list if roi not in list_rois_to_keep]
+        
+        structure_set.filter_rois(to_keep = list_rois_to_keep, to_remove = rois_to_remove)
 
-        structure_set.filter_rois(to_keep = rois_to_keep, to_remove = rois_to_remove)
         structure_set.rename_rois(names)
 
+        
         return structure_set
     
     def import_Img(self, path):
@@ -65,9 +69,7 @@ class ROI():
 
         structure_set.crop(xlim = None, ylim= None, zlim=limits)
 
-        structures = list(names.keys())
-
-        for structure in structures:
+        for structure in names:
             structure_set[str(structure)].number = None
 
         
@@ -77,9 +79,7 @@ class ROI():
     
         structure_set.crop(xlim = limits, ylim= None, zlim=None)
 
-        structures = list(names.keys())
-
-        for structure in structures:
+        for structure in names:
             structure_set[str(structure)].number = None
 
         
@@ -129,20 +129,24 @@ class ROI():
     def get_rois_CTVs(self, csv_path, new_names):
 
         contournames = pd.read_csv(csv_path, header =0, dtype = str)
-
+        rois_to_keep = list(contournames.columns.values)[0:2]
         names = {}
         if new_names == None:
-            rois_to_keep = list(contournames.columns.values)[0:2]
             for roi in rois_to_keep:
 
                 #print(r)
                 names[roi] = list(contournames.loc[:,roi].dropna())
+        
         else:
-            for roi in new_names:
-    
+            for r_index, roi in enumerate(new_names):
+                # assumes ctvs are stored first and second 
+                
                 #print(r)
-                names[roi] = list(contournames.loc[:,roi].dropna())
-        return rois_to_keep, 
+                names[roi] = list(contournames.loc[:,rois_to_keep[r_index]].dropna())
+        
+        
+
+        return rois_to_keep, names
 
     def get_atlas_alignment(self, text_file):
 

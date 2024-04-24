@@ -20,6 +20,8 @@ examination = get_current("Examination")
 '''
 find couch structures somehow
 '''
+
+
 # this is hard coded, and need to option of defining air 
 # I have emailed Josh about this 
 with CompositeAction('Apply ROI changes (CouchSurface)'):
@@ -114,4 +116,66 @@ AlgebraROI(ROIObject, ROIAlgebra)
 #  case.PatientModel.RegionsOfInterest[str(ROIAlgebra[0]['Expression_A']['Structure_Name'][0])].DeleteRoi()
 
 ## === Create the STVs === ## 
+
+# creatve CTV_ant
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_lowdose_ant'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTV_highdose_ant'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'None', 'Structure_Name': 'CTV_ant', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+
+# creatve STV_ant
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_ant'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
+{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_ant', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve CTV_pos
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_lowdose_pos'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTV_highdose_pos'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'None', 'Structure_Name': 'CTV_pos', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve STV_pos
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_pos'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
+{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_pos', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve CTV_left
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_lowdose_left'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTV_highdose_left'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'None', 'Structure_Name': 'CTV_left', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve STV_left
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_left'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
+{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_left', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+
+# creatve CTV_right
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_lowdose_right'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTV_highdose_right'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'None', 'Structure_Name': 'CTV_right', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve STV_right
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_right'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
+{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_right', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+
+
+
 
