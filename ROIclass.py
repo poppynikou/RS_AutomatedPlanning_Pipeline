@@ -38,8 +38,19 @@ class ROI():
         dicom_distance = self.Img_extent[2][0] + (nifti_slice * self.voxel_size[2])
 
         return dicom_distance
+    
 
-    def import_and_filter_CTVs(self, path, names):
+    def calc_atlas_yslice_indicom(self, atlas_slice):
+
+        nifti_slice = atlas_slice + self.quaternion_signs[1]*self.shifts[1]
+        #print(self.Img_extent[2])
+        dicom_distance = self.Img_extent[1][0] + (nifti_slice * self.voxel_size[1])
+
+        return dicom_distance
+    
+
+
+    def import_and_filter(self, path, names):
 
         structure_set = StructureSet(path)
         roi_list = structure_set.get_roi_names()
@@ -55,6 +66,9 @@ class ROI():
         
         return structure_set
     
+
+
+    
     def import_Img(self, path):
 
         self.Img = Image(path)
@@ -65,19 +79,9 @@ class ROI():
         
         return self.Img_extent
 
-    def crop_z(self, structure_set, names, limits):
+    def crop(self, structure_set, names, limits = []):
 
-        structure_set.crop(xlim = None, ylim= None, zlim=limits)
-
-        for structure in names:
-            structure_set[str(structure)].number = None
-
-        
-        return structure_set
-    
-    def crop_x(self, structure_set, names, limits):
-    
-        structure_set.crop(xlim = limits, ylim= None, zlim=None)
+        structure_set.crop(xlim = limits[0], ylim= limits[1], zlim=limits[2])
 
         for structure in names:
             structure_set[str(structure)].number = None
@@ -85,8 +89,7 @@ class ROI():
         
         return structure_set
     
-   
-    
+
     def remove_approval(self, path):
 
         rtstruct = pydicom.dcmread(path)
@@ -143,8 +146,48 @@ class ROI():
                 
                 #print(r)
                 names[roi] = list(contournames.loc[:,rois_to_keep[r_index]].dropna())
+
+        return rois_to_keep, names
+    
+    def get_rois_highdoseCTV(self, csv_path, new_names):
+    
+        contournames = pd.read_csv(csv_path, header =0, dtype = str)
+        rois_to_keep = [list(contournames.columns.values)[0]]
+
+        names = {}
+        if new_names == None:
+            for roi in rois_to_keep:
+
+                #print(r)
+                names[roi] = list(contournames.loc[:,roi].dropna())
         
+        else:
+            for r_index, roi in enumerate(new_names):
+                # assumes ctvs are stored first and second 
+                
+                #print(r)
+                names[roi] = list(contournames.loc[:,rois_to_keep[r_index]].dropna())
+
+        return rois_to_keep, names
+    
+    def get_rois_lowdoseCTV(self, csv_path, new_names):
+    
+        contournames = pd.read_csv(csv_path, header =0, dtype = str)
+        rois_to_keep = [list(contournames.columns.values)[1]]
+
+        names = {}
+        if new_names == None:
+            for roi in rois_to_keep:
+
+                #print(r)
+                names[roi] = list(contournames.loc[:,roi].dropna())
         
+        else:
+            for r_index, roi in enumerate(new_names):
+                # assumes ctvs are stored first and second 
+                
+                #print(r)
+                names[roi] = list(contournames.loc[:,rois_to_keep[r_index]].dropna())
 
         return rois_to_keep, names
 
