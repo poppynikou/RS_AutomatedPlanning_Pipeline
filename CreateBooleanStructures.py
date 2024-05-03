@@ -9,30 +9,20 @@
 
 from connect import *
 
-'''
-need to work out how to get the case you want
-not just the current 
-'''
+# get patient
+patient_db = get_current("PatientDB")
+patient_db.CreatePatient(LastName = '', FirstName = '', PatientID = '', BirthDate = '', Gender = '')
+dicom_path = ''
+patient.ImportDataFromPath(Path = dicom_path, CaseName  = 'Case 2', )
 
+ui = get_current("ui")
+ui.TabControl_ToolBar.ToolBarGroup.ToolBarGroup['PATIENT HANDLING'].Button_Open
+
+
+# import patients information 
 case = get_current("Case")
 examination = get_current("Examination")
-
-
-# sets the couch material correctly 
-
-
 patient_db = get_current("PatientDB")
-Templates = patient_db.GetTemplateMaterials()
-
-for i in Templates:
-    if i.Material.Name == "Adipose":
-        SelectedMaterial = i.Material
-
-case.PatientModel.RegionsOfInterest['CouchSurface'].SetRoiMaterial(Material=SelectedMaterial)
-case.PatientModel.RegionsOfInterest['CouchInterior'].SetRoiMaterial(Material=SelectedMaterial)
-case.PatientModel.RegionsOfInterest['CouchRailLeft'].SetRoiMaterial(Material=SelectedMaterial)
-case.PatientModel.RegionsOfInterest['CouchRailRight'].SetRoiMaterial(Material=SelectedMaterial)
-
 
 
 def CreateROI(name, ROIType):
@@ -58,7 +48,7 @@ ROIAlgebra = [ \
 {'Expression_result': {'Expression_type': '', 'Structure_Name': '', 'Margin_type': '', 'Margin_size': ''}}]
 '''    
 
-
+## === Create correct CTVs === ## 
 
 # create a croppped back CTV_lowdose to make sure it doesnt overlap with the CTV_highdose
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
@@ -72,8 +62,6 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 {'Expression_result':{ 'Expression_type': 'Intersection', 'Structure_Name': 'CTVLOW_OPT', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
-with CompositeAction('Delete ROIs (CTVLOW_CROP_INTERMEDIATE)'):
-  case.PatientModel.RegionsOfInterest['CTVLOW_CROP_INTERMEDIATE'].DeleteRoi()
 
 ## === Create the OTVs === ## 
 
@@ -102,8 +90,6 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 {'Expression_result':{ 'Expression_type': 'Subtraction', 'Structure_Name': 'OTVLOW', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
-with CompositeAction('Delete ROIs (OTVLOW_INTERMEDIATE)'):
-  case.PatientModel.RegionsOfInterest['OTVLOW_INTERMEDIATE'].DeleteRoi()
 
 
 ## === Create the STVs === ## 
@@ -122,8 +108,6 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 {'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_ANT', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
-with CompositeAction('Delete ROIs (CTV_ANT)'):
-  case.PatientModel.RegionsOfInterest['CTV_ANT'].DeleteRoi()
 
 # creatve CTV_pos
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
@@ -138,8 +122,7 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 {'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_POS', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
-with CompositeAction('Delete ROIs (CTV_POS)'):
-  case.PatientModel.RegionsOfInterest['CTV_POS'].DeleteRoi()
+
 
 # creatve CTV_left
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_L'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
@@ -154,8 +137,6 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 {'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_L', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
-with CompositeAction('Delete ROIs (CTV_LEFT)'):
-  case.PatientModel.RegionsOfInterest['CTV_LEFT'].DeleteRoi()
 
 # creatve CTV_right
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_R'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
@@ -170,11 +151,16 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 {'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_R', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
-with CompositeAction('Delete ROIs (CTV_R)'):
-  case.PatientModel.RegionsOfInterest['CTV_R'].DeleteRoi()
 
+# delete all the structures created which you don't need
+case.PatientModel.RegionsOfInterest['CTVLOW_CROP_INTERMEDIATE'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['OTVLOW_INTERMEDIATE'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTV_ANT'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTV_POS'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTV_LEFT'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTV_R'].DeleteRoi()
 
-
+# assign all the structures to the appropriate types 
 case.PatientModel.RegionsOfInterest['CTVHIGH'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['CTVHIGH_R'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['CTVHIGH_L'].Type = "Ctv"
@@ -189,11 +175,10 @@ case.PatientModel.RegionsOfInterest['CTVLOW_ANT'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['CTVLOW_POS'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['OTVHIGH'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['OTVLOW'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['STVHIGH'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['STVHIGH_R'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['STVHIGH_L'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['STVHIGH_ANT'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['STVHIGH_POS'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_R'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_L'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_ANT'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_POS'].Type = "Ctv"
 
 case.PatientModel.RegionsOfInterest['CTVHIGH'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['CTVHIGH_R'].OrganData.OrganType = "Target"
@@ -209,11 +194,10 @@ case.PatientModel.RegionsOfInterest['CTVLOW_ANT'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['CTVLOW_POS'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['OTVHIGH'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['OTVLOW'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['STVHIGH'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['STVHIGH_R'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['STVHIGH_L'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['STVHIGH_ANT'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['STVHIGH_POS'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_R'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_L'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_ANT'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_POS'].OrganData.OrganType = "Target"
 
 
 case.PatientModel.RegionsOfInterest['BODY'].Type = "External"
@@ -229,3 +213,24 @@ case.PatientModel.RegionsOfInterest['PAROTIDL'].Type = "Organ"
 case.PatientModel.RegionsOfInterest['PAROTIDL'].OrganData.OrganType = "OrganAtRisk"
 case.PatientModel.RegionsOfInterest['PAROTIDR'].Type = "Organ"
 case.PatientModel.RegionsOfInterest['PAROTIDR'].OrganData.OrganType = "OrganAtRisk"
+
+
+# sets the couch material correctly 
+Templates = patient_db.GetTemplateMaterials()
+for i in Templates:
+    if i.Material.Name == "Air":
+        SelectedMaterial = i.Material
+
+case.PatientModel.RegionsOfInterest['CouchSurface'].SetRoiMaterial(Material=SelectedMaterial)
+case.PatientModel.RegionsOfInterest['CouchInterior'].SetRoiMaterial(Material=SelectedMaterial)
+case.PatientModel.RegionsOfInterest['CouchRailLeft'].SetRoiMaterial(Material=SelectedMaterial)
+case.PatientModel.RegionsOfInterest['CouchRailRight'].SetRoiMaterial(Material=SelectedMaterial)
+
+case.PatientModel.RegionsOfInterest['CouchSurface'].Type = "Support"
+case.PatientModel.RegionsOfInterest['CouchInterior'].Type = "Support"
+case.PatientModel.RegionsOfInterest['CouchRailLeft'].Type = "Support"
+case.PatientModel.RegionsOfInterest['CouchRailRight'].Type = "Support"
+case.PatientModel.RegionsOfInterest['CouchSurface'].OrganData.OrganType = "Other"
+case.PatientModel.RegionsOfInterest['CouchInterior'].OrganData.OrganType = "Other"
+case.PatientModel.RegionsOfInterest['CouchRailLeft'].OrganData.OrganType = "Other"
+case.PatientModel.RegionsOfInterest['CouchRailRight'].OrganData.OrganType = "Other"
