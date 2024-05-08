@@ -1,1 +1,21 @@
-    for supporting Python development.  See www.python.org for more information., 'license': Type license() to see the full license text, 'help': Type help() for interactive help, or help(object) for help about object.}), ('__cached__', 'C:\\Program Files\\RaySearch Laboratories\\RayStation 2023B-R\\ScriptClient\\connect\\__pycache__\\__init__.cpython-38.pyc'), ('__doc__', ' Module to handle the connection between Python and RayStation '), ('__file__', 'C:\\Program Files\\RaySearch Laboratories\\RayStation 2023B-R\\ScriptClient\\connect\\__init__.py'), ('__loader__', <_frozen_importlib_external.SourceFileLoader object at 0x000001A74B28D100>), ('__name__', 'connect'), ('__package__', 'connect'), ('__path__', ['C:\\Program Files\\RaySearch Laboratories\\RayStation 2023B-R\\ScriptClient\\connect']), ('__spec__', ModuleSpec(name='connect', loader=<_frozen_importlib_external.SourceFileLoader object at 0x000001A74B28D100>, origin='C:\\Program Files\\RaySearch Laboratories\\RayStation 2023B-R\\ScriptClient\\connect\\__init__.py', submodule_search_locations=['C:\\Program Files\\RaySearch Laboratories\\RayStation 2023B-R\\ScriptClient\\connect'])), ('append_path', <function append_path at 0x000001A7DCA71B80>), ('array_list', <class 'connect.connect_cpython.array_list'>), ('arrayify', <function arrayify at 0x000001A7DCA70A60>), ('await_user_input', <function await_user_input at 0x000001A7DCA718B0>), ('builtins', <module 'builtins' (built-in)>), ('check_path', <function check_path at 0x000001A7DCA71AF0>), ('clr', <module 'clr' from 'C:\\Program Files\\Python38\\lib\\site-packages\\clr.pyd'>), ('clrify', <function clrify at 0x000001A7DCA6D040>), ('connect', <function connect at 0x000001A7DCA411F0>), ('connect_cpython', <module 'connect.connect_cpython' from 'C:\\Program Files\\RaySearch Laboratories\\RayStation 2023B-R\\ScriptClient\\connect\\connect_cpython.py'>), ('convert_python_list_to_cs_list', <function convert_python_list_to_cs_list at 0x000001A7DCA749D0>), ('ctypes', <module 'ctypes' from 'C:\\Program Files\\Python38\\lib\\ctypes\\__init__.py'>), ('format_error_message', <function format_error_message at 0x000001A7DCA74700>), ('format_traceback', <function format_traceback at 0x000001A7DCA74790>), ('get_current', <function get_current at 0x000001A7DCA6D430>), ('get_input', <function get_input at 0x000001A7DCA74820>), ('get_pid', <function get_pid at 0x000001A7DCA71CA0>), ('inspect', <module 'inspect' from 'C:\\Program Files\\Python38\\lib\\inspect.py'>), ('is_autotest', <function is_autotest at 0x000001A7DCA71C10>), ('is_gui_disabled', <function is_gui_disabled at 0x000001A7DCA71940>), ('len', <function len at 0x000001A7DCA6D0D0>), ('np', <module 'numpy' from 'C:\\Program Files\\Python38\\lib\\site-packages\\numpy\\__init__.py'>), ('numpyify', <function numpyify at 0x000001A7DCA709D0>), ('os', <module 'os' from 'C:\\Program Files\\Python38\\lib\\os.py'>), ('platform', <module 'platform' from 'C:\\Program Files\\Python38\\lib\\platform.py'>), ('post_output', <function post_output at 0x000001A7DCA748B0>), ('pyobjify', <function pyobjify at 0x000001A7DCA70B80>), ('ray_window', <module 'connect.ray_window' from 'C:\\Program Files\\RaySearch Laboratories\\RayStation 2023B-R\\ScriptClient\\connect\\ray_window.py'>), ('run', <function run at 0x000001A7DCA71A60>), ('set_progress', <function set_progress at 0x000001A7DCA74940>), ('sorted_dict', <class 'connect.connect_cpython.sorted_dict'>), ('stop_if_no_gui', <function stop_if_no_gui at 0x000001A7DCA719D0>), ('sys', <module 'sys' (built-in)>), ('systemify', <function systemify at 0x000001A7DCA70AF0>), ('traceback', <module 'traceback' from 'C:\\Program Files\\Python38\\lib\\traceback.py'>)]
+from skrt import Image, StructureSet
+
+
+path = 'D:/UCLH_MODELS/PATIENTSPACE_REGS/CBCT_20160115/CT_resampled.nii.gz'
+Img = Image(path)
+voxel_size = Img.get_voxel_size()
+
+new_dicom_path = 'D:/UCLH_MODELS/PATIENTSPACE_REGS/CBCT_20160115/DICOM'
+ref_dicom_path = 'D:/UCLH_HN/HN_1/CT_20151217/DICOM/CT_20151217_1.dcm'
+Img.write(outname = new_dicom_path, header_source = ref_dicom_path, modality = 'CT')#, voxel_size =voxel_size)
+
+'''
+rois_path = 'D:/UCLH_MODELS/PATIENTSPACE_REGS/CBCT_20160115/STRUCTURES'
+Structure_Set = StructureSet(rois_path)
+
+new_rtstruct_path = 'D:/UCLH_MODELS/PATIENTSPACE_REGS/CBCT_20160115/DICOM/RTSTRUCT.dcm'
+ref_rtstruct_path = 'D:/UCLH_HN/HN_1/CT_20151217/STRUCTURES/RTSTRUCT_CT_20151217.dcm'
+Structure_Set.image = Img
+Structure_Set.write(outname = new_rtstruct_path, header_source =  ref_rtstruct_path)#, voxel_size =voxel_size)
+'''
+
