@@ -10,6 +10,8 @@
 from connect import *
 
 # get patient
+
+'''
 patient_db = get_current("PatientDB")
 patient_db.CreatePatient(LastName = '', FirstName = '', PatientID = '', BirthDate = '', Gender = '')
 dicom_path = ''
@@ -17,6 +19,8 @@ patient.ImportDataFromPath(Path = dicom_path, CaseName  = 'Case 2', )
 
 ui = get_current("ui")
 ui.TabControl_ToolBar.ToolBarGroup.ToolBarGroup['PATIENT HANDLING'].Button_Open
+
+'''
 
 
 # import patients information 
@@ -57,29 +61,35 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_CROP_INTERMEDIATE'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
+# crop back from body 
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_CROP_INTERMEDIATE'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
-{'Expression_result':{ 'Expression_type': 'Intersection', 'Structure_Name': 'CTVLOW_OPT', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+{'Expression_result':{ 'Expression_type': 'Intersection', 'Structure_Name': 'PHYSTVLOW', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
+# crop back from body 
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
+{'Expression_result':{ 'Expression_type': 'Intersection', 'Structure_Name': 'PHYSTVHIGH', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+
 ## === Create the OTVs === ## 
-
-
 # expand CTV_highdose by 3mm
 # make sure its cropped back from the body by 1mm 
 # call it OTV_high
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['PHYSTVHIGH'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
 {'Expression_result':{ 'Expression_type': 'Intersection', 'Structure_Name': 'OTVHIGH', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
-
 # expand CTV_lowdose by 3mm
 # make sure its cropped back from the body by 1mm and 1mm from the CTV_highdose
 # call it OTV_low
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_OPT'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['PHYSTVLOW'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
 {'Expression_result':{ 'Expression_type': 'Intersection', 'Structure_Name': 'OTVLOW_INTERMEDIATE', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
@@ -94,111 +104,100 @@ AlgebraROI(ROIObject, ROIAlgebra)
 
 ## === Create the STVs === ## 
 
-# creatve CTV_ant
+# creatve STV_ANT
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_ANT'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_ANT'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'CTV_ANT', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_ANT', 'Margin_type': 'Expand', 'Margin_size': '0.3'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
-
-# creatve STV_ant
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_ANT'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
-{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
-{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_ANT', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
-ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
-AlgebraROI(ROIObject, ROIAlgebra)
-
-# creatve CTV_pos
+# creatve STV_POS
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'CTV_POS', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_POS', 'Margin_type': 'Expand', 'Margin_size': '0.3'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
-# creatve STV_pos
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_POS'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
-{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
-{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_POS', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+# creatve STV_LAO
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_LAO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_LAO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_LAO', 'Margin_type': 'Expand', 'Margin_size': '0.3'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve STV_LPO
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_LPO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_LPO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_LPO', 'Margin_type': 'Expand', 'Margin_size': '0.3'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve STV_RAO
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_RAO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_RAO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_RAO', 'Margin_type': 'Expand', 'Margin_size': '0.3'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
+# creatve STV_RPO
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_RPO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_RPO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_RPO', 'Margin_type': 'Expand', 'Margin_size': '0.3'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
 
-# creatve CTV_left
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_L'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_L'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'CTV_LEFT', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
-ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
-AlgebraROI(ROIObject, ROIAlgebra)
-
-# creatve STV_left
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_LEFT'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
-{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
-{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_L', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
-ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
-AlgebraROI(ROIObject, ROIAlgebra)
-
-# creatve CTV_right
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_R'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_R'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'CTV_R', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
-ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
-AlgebraROI(ROIObject, ROIAlgebra)
-
-# creatve STV_right
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTV_R'], 'Margin_type': 'Expand', 'Margin_size': '0.3'}}, \
-{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['BODY'], 'Margin_type': 'Contract', 'Margin_size': '0.1'}}, \
-{'Expression_result': {'Expression_type': 'Intersection', 'Structure_Name': 'STV_R', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+#create STV_Total
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['STV_ANT'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_TOTAL', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
 # delete all the structures created which you don't need
 case.PatientModel.RegionsOfInterest['CTVLOW_CROP_INTERMEDIATE'].DeleteRoi()
 case.PatientModel.RegionsOfInterest['OTVLOW_INTERMEDIATE'].DeleteRoi()
-case.PatientModel.RegionsOfInterest['CTV_ANT'].DeleteRoi()
-case.PatientModel.RegionsOfInterest['CTV_POS'].DeleteRoi()
-case.PatientModel.RegionsOfInterest['CTV_LEFT'].DeleteRoi()
-case.PatientModel.RegionsOfInterest['CTV_R'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVHIGH'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVLOW'].DeleteRoi()
+
+case.PatientModel.RegionsOfInterest['CTVHIGH_RAO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVHIGH_LAO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVHIGH_RPO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVHIGH_LPO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVHIGH_ANT'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVHIGH_POS'].DeleteRoi()
+
+case.PatientModel.RegionsOfInterest['CTVLOW_RAO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVLOW_LAO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVLOW_RPO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVLOW_LPO'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVLOW_ANT'].DeleteRoi()
+case.PatientModel.RegionsOfInterest['CTVLOW_POS'].DeleteRoi()
 
 # assign all the structures to the appropriate types 
-case.PatientModel.RegionsOfInterest['CTVHIGH'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVHIGH_R'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVHIGH_L'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVHIGH_ANT'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVHIGH_POS'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVLOW'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVLOW_OPT'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVLOW_R'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVLOW_L'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVHIGH_ANT'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVLOW_ANT'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['CTVLOW_POS'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['PHYSTVHIGH'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['PHYSTVLOW'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['OTVHIGH'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['OTVLOW'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['STV_R'].Type = "Ctv"
-case.PatientModel.RegionsOfInterest['STV_L'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_RAO'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_LAO'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_RPO'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_LPO'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['STV_ANT'].Type = "Ctv"
 case.PatientModel.RegionsOfInterest['STV_POS'].Type = "Ctv"
+case.PatientModel.RegionsOfInterest['STV_TOTAL'].Type = "Ctv"
 
-case.PatientModel.RegionsOfInterest['CTVHIGH'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVHIGH_R'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVHIGH_L'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVHIGH_ANT'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVHIGH_POS'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVLOW'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVLOW_OPT'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVLOW_R'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVLOW_L'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVHIGH_ANT'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVLOW_ANT'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['CTVLOW_POS'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['PHYSTVHIGH'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['PHYSTVLOW'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['OTVHIGH'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['OTVLOW'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['STV_R'].OrganData.OrganType = "Target"
-case.PatientModel.RegionsOfInterest['STV_L'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_RAO'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_LAO'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_RPO'].OrganData.OrganType = "Target"
+case.PatientModel.RegionsOfInterest['STV_LPO'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['STV_ANT'].OrganData.OrganType = "Target"
 case.PatientModel.RegionsOfInterest['STV_POS'].OrganData.OrganType = "Target"
-
+case.PatientModel.RegionsOfInterest['STV_TOTAL'].OrganData.OrganType = "Target"
 
 case.PatientModel.RegionsOfInterest['BODY'].Type = "External"
 case.PatientModel.RegionsOfInterest['BODY'].SetAsExternal()
