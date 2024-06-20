@@ -67,8 +67,6 @@ class ROI():
         return structure_set
     
 
-
-    
     def import_Img(self, path):
 
         self.Img = Image(path)
@@ -85,7 +83,6 @@ class ROI():
 
         for structure in names:
             structure_set[str(structure)].number = None
-
         
         return structure_set
     
@@ -190,20 +187,24 @@ class ROI():
                 names[roi] = list(contournames.loc[:,rois_to_keep[r_index]].dropna())
 
         return rois_to_keep, names
+    
 
     def get_atlas_alignment(self, text_file):
 
 
         text_info = np.loadtxt(text_file, dtype='i', delimiter=' ', converters=float)
 
+        x_shift, y_shift, z_shift = text_info[0,3]/self.voxel_size[0], text_info[1,3]/self.voxel_size[1], text_info[2,3]/self.voxel_size[2]
+        #print(x_shift, y_shift, z_shift)
 
-        x_shift, y_shift, z_shift = text_info[0,3], text_info[1,3], text_info[2,3]
+        
 
         return [x_shift, y_shift, z_shift]
     
     def get_quaternion(self):
 
-        # not sure where this comes from exactly 
+        # not sure where this comes from exactly ]
+
         
         return
         
