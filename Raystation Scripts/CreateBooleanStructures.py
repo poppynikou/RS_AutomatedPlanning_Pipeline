@@ -19,7 +19,6 @@ patient.ImportDataFromPath(Path = dicom_path, CaseName  = 'Case 2', )
 
 ui = get_current("ui")
 ui.TabControl_ToolBar.ToolBarGroup.ToolBarGroup['PATIENT HANDLING'].Button_Open
-
 '''
 
 
@@ -54,7 +53,7 @@ ROIAlgebra = [ \
 
 ## === Create correct CTVs === ## 
 
-# create a croppped back CTV_lowdose to make sure it doesnt overlap with the CTV_highdose
+# create a croppped back CTV_lowdose to make sure it doesn't overlap with the CTV_highdose
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH'], 'Margin_type': 'Expand', 'Margin_size': '0.1'}}, \
 {'Expression_result':{ 'Expression_type': 'Subtraction', 'Structure_Name': 'CTVLOW_CROP_INTERMEDIATE', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
@@ -118,6 +117,13 @@ ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
 AlgebraROI(ROIObject, ROIAlgebra)
 
+#create STV_Total
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['STV_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['STV_ANT'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_TOTAL', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
+ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
+AlgebraROI(ROIObject, ROIAlgebra)
+
 # creatve STV_LAO
 ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_LAO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['CTVHIGH_LAO'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
@@ -147,12 +153,7 @@ ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv
 AlgebraROI(ROIObject, ROIAlgebra)
 
 
-#create STV_Total
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['STV_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['STV_ANT'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
-{'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_TOTAL', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
-ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")
-AlgebraROI(ROIObject, ROIAlgebra)
+
 
 # delete all the structures created which you don't need
 case.PatientModel.RegionsOfInterest['CTVLOW_CROP_INTERMEDIATE'].DeleteRoi()

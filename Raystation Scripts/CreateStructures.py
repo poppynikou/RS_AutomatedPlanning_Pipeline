@@ -18,7 +18,8 @@ for patient in patients:
 
     path_csv = os.getcwd() + '\Contour_Naming_Schema.csv'
     rtstruct_path = [path_to_patients + str(patient) + '/' + file for file in os.listdir(path_to_patients + str(patient)) if file.startswith('RTSTRUCT')][0]
-    RS_rtstruct_path = 'D:/RBP_RS/UCLH/DICOM_RS/'+str(patient)+'/RS.dcm'
+    RS_rtstruct_path = 'D:/RBP_RS/TEST.dcm'
+    #UCLH/DICOM_RS/'+str(patient)+'/RS.dcm'
     img_path = path_to_patients + str(patient) + '/CT/'
     text_file_path = 'D:/RBP_RS/UCLH/DICOM_pCT/'+str(patient)+'/InitAlignment_atlas.txt'
 
@@ -51,89 +52,36 @@ for patient in patients:
     structure_set2 = ROIobj.import_and_filter(rtstruct_path, names)
     structure_set2 = ROIobj.crop(structure_set2, newnames, limits = [None, None,[z_shoulder, int(z_max)]])
 
-    newnames = ['CTVLOW_LAO']
+    newnames = ['CTVLOWTemp']
     rois_to_keep, names = ROIobj.get_rois_lowdoseCTV(path_csv, newnames)
     structure_set3 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set3 = ROIobj.crop(structure_set3, newnames, limits = [[x_cut, x_max], None, None])
- 
-    newnames = ['CTVLOW_RAO']
-    rois_to_keep, names = ROIobj.get_rois_lowdoseCTV(path_csv, newnames)
+    newnames = ['CTVHIGHTemp']
+    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
     structure_set4 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set4 = ROIobj.crop(structure_set4, newnames, limits = [[x_min, x_cut], None, None])
-
-    newnames = ['CTVLOW_RPO']
-    rois_to_keep, names = ROIobj.get_rois_lowdoseCTV(path_csv, newnames)
-    structure_set17 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set17 = ROIobj.crop(structure_set17, newnames, limits = [[x_min, x_cut], None, [z_shoulder, int(z_max)]])
-
-    newnames = ['CTVLOW_LPO']
-    rois_to_keep, names = ROIobj.get_rois_lowdoseCTV(path_csv, newnames)
-    structure_set18 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set18 = ROIobj.crop(structure_set18, newnames, limits = [[x_cut, x_max], None, [z_shoulder, int(z_max)]])
-
-    newnames = ['CTVHIGH_LAO1']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set5 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set5 = ROIobj.crop(structure_set5, newnames, limits = [[x_cut, x_max], None, None])
-
-    newnames = ['CTVHIGH_LAO2']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set6 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set6 = ROIobj.crop(structure_set6, newnames, limits = [[x_min,x_cut], [y_min, y_cut], None])
-
-    total_structure_set_CTV_highdose_right = ROIobj.add_structure_sets([structure_set5, structure_set6])
-    ROI_total_structure_set_CTV_highdose_right = total_structure_set_CTV_highdose_right.combine_rois(name = 'CTVHIGH_LAO', intersection = False)
+    total_structure_set_CTV_total = ROIobj.add_structure_sets([structure_set3, structure_set4])
+    total_structure_set_CTV_total = total_structure_set_CTV_total.combine_rois(name = 'CTVTOTAL', intersection = False)
     new_structure_set1 = StructureSet()
-    new_structure_set1.add_roi(ROI_total_structure_set_CTV_highdose_right)
+    new_structure_set1.add_roi(total_structure_set_CTV_total)
 
-    newnames = ['CTVHIGH_RAO1']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set8 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set8 = ROIobj.crop(structure_set8, newnames, limits = [[x_min, x_cut], None, None])
+    newnames = ['CTV_LAO']
+    CTV_HIGH_TOTAL = new_structure_set1.get_roi('CTVTOTAL')
+    print(CTV_HIGH_TOTAL)
+    # its because crop is a function you made 
+    # and crop is also a function of StructureSet() by scikit-rt
+    structure_set5 = new_structure_set1.crop(CTV_HIGH_TOTAL, newnames, limits = [[x_cut, x_max], [y_min, y_cut], None])
 
-    newnames = ['CTVHIGH_RAO2']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set9 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set9 = ROIobj.crop(structure_set9, newnames, limits = [[x_cut,x_max], [y_min,y_cut], None])
+    newnames = ['CTV_RAO']
+    structure_set6 = new_structure_set1.crop(total_structure_set_CTV_total, newnames, limits = [[x_min, x_cut], [y_min,y_cut], None])
 
-    total_structure_set_CTV_highdose_left = ROIobj.add_structure_sets([structure_set8, structure_set9])
-    ROI_total_structure_set_CTV_highdose_left = total_structure_set_CTV_highdose_left.combine_rois(name = 'CTVHIGH_RAO', intersection = False)
-    new_structure_set2 = StructureSet()
-    new_structure_set2.add_roi(ROI_total_structure_set_CTV_highdose_left)
+    newnames = ['CTV_RPO']
+    structure_set17 = new_structure_set1.crop(total_structure_set_CTV_total, newnames, limits = [[x_min, x_cut], [y_min,y_cut], [z_shoulder, int(z_max)]])
 
-    newnames = ['CTVHIGH_RPO1']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set11 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set11 = ROIobj.crop(structure_set11, newnames, limits = [[x_min, x_cut], None, [z_shoulder, int(z_max)]])
-
-    newnames = ['CTVHIGH_RPO2']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set12 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set12= ROIobj.crop(structure_set12, newnames, limits = [[x_cut,x_max], [y_min,y_cut], [z_shoulder, int(z_max)]])
-
-    total_structure_set_CTV_highdose_LPO = ROIobj.add_structure_sets([structure_set11, structure_set12])
-    ROI_total_structure_set_CTV_highdose_LPO = total_structure_set_CTV_highdose_LPO.combine_rois(name = 'CTVHIGH_RPO', intersection = False)
-    new_structure_set3 = StructureSet()
-    new_structure_set3.add_roi(ROI_total_structure_set_CTV_highdose_LPO)
-
-    newnames = ['CTVHIGH_LPO1']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set14 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set14 = ROIobj.crop(structure_set14, newnames, limits = [[x_cut, x_max], None, [z_shoulder, int(z_max)]])
-
-    newnames = ['CTVHIGH_LPO2']
-    rois_to_keep, names = ROIobj.get_rois_highdoseCTV(path_csv, newnames)
-    structure_set15 = ROIobj.import_and_filter(rtstruct_path, names)
-    structure_set15 = ROIobj.crop(structure_set15, newnames, limits = [[x_min,x_cut], [y_min, y_cut], [z_shoulder, int(z_max)]])
-
-    total_structure_set_CTV_highdose_right = ROIobj.add_structure_sets([structure_set14, structure_set15])
-    ROI_total_structure_set_CTV_highdose_right = total_structure_set_CTV_highdose_right.combine_rois(name = 'CTVHIGH_LPO', intersection = False)
-    new_structure_set4 = StructureSet()
-    new_structure_set4.add_roi(ROI_total_structure_set_CTV_highdose_right)
+    newnames = ['CTV_LPO']
+    structure_set18 = new_structure_set1.crop(total_structure_set_CTV_total, newnames, limits = [[x_cut, x_max], [y_min, y_cut], [z_shoulder, int(z_max)]])
 
     rois_to_keep, names = ROIobj.get_rois_all(path_csv)
     structure_set20 = ROIobj.import_and_filter(rtstruct_path, names)
-    total_structure_set = ROIobj.add_structure_sets([structure_set20, structure_set1, structure_set2, structure_set3, structure_set4, structure_set17, structure_set18, new_structure_set1, new_structure_set2, new_structure_set3, new_structure_set4])
+    total_structure_set = ROIobj.add_structure_sets([structure_set20, structure_set1, structure_set2,  structure_set5, structure_set6, structure_set17, structure_set18])
     ROIobj.save_rtstruct(total_structure_set, RS_rtstruct_path, rtstruct_path)
 
     ROIobj.remove_approval(RS_rtstruct_path)
