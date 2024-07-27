@@ -7,23 +7,25 @@ import os
 This assumes that in the patient folder there is:
 - pCT
 - text file containing the affine/rigid transformation from patient space -> model space 
+but it assumes that the rigid transformation just accounts for small miss-alignments, not large ones
 '''
 
-path_to_patients = 'D:/RBP_RS/GSTT/DICOM_pCT/'
-patients = os.listdir(path_to_patients)
+path_to_patients = 'D:/RBP_RS/UCLH/DICOM_pCT/'
+patients = ['HN_10']
+#os.listdir(path_to_patients)
 
 for patient in patients:
 
     path_csv = os.getcwd() + '\Contour_Naming_Schema.csv'
-    rtstruct_path = [path_to_patients + str(patient) + '/' + file for file in os.listdir(path_to_patients + str(patient)) if file.startswith('RS')][0]
-    RS_rtstruct_path = 'D:/RBP_RS/GSTT/DICOM_RTRSTRUCT_RS/'+str(patient)+'/RS.dcm'
+    rtstruct_path = [path_to_patients + str(patient) + '/' + file for file in os.listdir(path_to_patients + str(patient)) if file.startswith('RTSTRUCT')][0]
+    RS_rtstruct_path = 'D:/RBP_RS/UCLH/DICOM_RS/'+str(patient)+'/RS.dcm'
     img_path = path_to_patients + str(patient) + '/CT/'
-    text_file_path = 'D:/RBP_RS/GSTT/RIGID_ATLAS_pCT/'+str(patient)+'/InitAlignment_atlas.txt'
+    text_file_path = 'D:/RBP_RS/UCLH/DICOM_pCT/'+str(patient)+'/InitAlignment_atlas.txt'
 
     # defined in atlas space
     atlas_x_cut = 260
     atlas_z_chin = 71
-    atlas_z_shoulder = 50
+    #atlas_z_shoulder = 50
     atlas_y_spinalcord = 200
 
     ROIobj = ROI()
@@ -35,7 +37,8 @@ for patient in patients:
 
     x_cut = ROIobj.calc_atlas_xslice_in_dicom(atlas_x_cut)
     z_chin = ROIobj.calc_atlas_zslice_in_dicom(atlas_z_chin)
-    z_shoulder = ROIobj.calc_atlas_zslice_in_dicom(atlas_z_shoulder)
+    #z_shoulder = ROIobj.calc_atlas_zslice_in_dicom(atlas_z_shoulder)
+    z_shoulder = ROIobj.get_shoulder_slice_in_dicom(path_csv, rtstruct_path, img_path)
     y_cut = ROIobj.calc_atlas_yslice_indicom(atlas_y_spinalcord)
 
     newnames = ['CTVHIGH_ANT', 'CTVLOW_ANT']
@@ -52,7 +55,7 @@ for patient in patients:
     rois_to_keep, names = ROIobj.get_rois_lowdoseCTV(path_csv, newnames)
     structure_set3 = ROIobj.import_and_filter(rtstruct_path, names)
     structure_set3 = ROIobj.crop(structure_set3, newnames, limits = [[x_cut, x_max], None, None])
-
+ 
     newnames = ['CTVLOW_RAO']
     rois_to_keep, names = ROIobj.get_rois_lowdoseCTV(path_csv, newnames)
     structure_set4 = ROIobj.import_and_filter(rtstruct_path, names)
@@ -134,3 +137,4 @@ for patient in patients:
     ROIobj.save_rtstruct(total_structure_set, RS_rtstruct_path, rtstruct_path)
 
     ROIobj.remove_approval(RS_rtstruct_path)
+

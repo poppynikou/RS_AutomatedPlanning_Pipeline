@@ -148,7 +148,7 @@ AlgebraROI(ROIObject, ROIAlgebra)
 
 
 #create STV_Total
-ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['CTVLOW_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
+ROIAlgebra = [{'Expression_A': {'Expression_type': 'Union', 'Structure_Name': ['STV_POS'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
 {'Expression_B': {'Expression_type': 'Union', 'Structure_Name': ['STV_ANT'], 'Margin_type': 'Expand', 'Margin_size': '0'}}, \
 {'Expression_result': {'Expression_type': 'Union', 'Structure_Name': 'STV_TOTAL', 'Margin_type': 'Expand', 'Margin_size': '0'}}]
 ROIObject = CreateROI(ROIAlgebra[2]['Expression_result']['Structure_Name'], "Ptv")

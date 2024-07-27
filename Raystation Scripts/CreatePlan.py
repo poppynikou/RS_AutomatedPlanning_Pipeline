@@ -11,7 +11,7 @@ from connect import *
 
 
 db = get_current("PatientDB")
-TemplateTreatmentOptimization_fourfield = db.LoadTemplateOptimizationFunctions(templateName = 'FOURFIELD_HN', lockMode = 'Read')
+TemplateTreatmentOptimization_fourfield = db.LoadTemplateOptimizationFunctions(templateName = 'FOURFIELD_ROBUST_PHYSTV', lockMode = 'Read')
 TemplateClinicalGoals = db.LoadTemplateClinicalGoals(templateName = 'HN_CG_AUTO', lockMode = 'Read')
 
 case = get_current("Case")
@@ -44,6 +44,9 @@ beam_set.CreatePBSIonBeam(Name = "RAO", GantryAngle=315, CouchRotationAngle=0, A
 
 plan.PlanOptimizations[0].ResetOptimization()
 plan.PlanOptimizations[0].ApplyOptimizationTemplate(Template = TemplateTreatmentOptimization_fourfield, AssociatedRoisAndPois={'STR_RAO': "STV_RAO", 'STV_LAO': "STV_LAO", 'STV_POS': "STV_POS", 'STV_ANT': "STV_ANT", 'BODY': "BODY", 'OTVHIGH': "OTVHIGH", 'OTVLOW': "OTVLOW", 'BRAINSTEM': "BRAINSTEM", 'CORD': "CORD", 'PAROTIDL': "PAROTIDL", 'PAROTIDR': "PAROTIDR" })
+
+plan.PlanOptimizations[0].OptimizationParameters.SaveRobustnessParameters(PositionUncertaintyAnterior=0.3, PositionUncertaintyPosterior=0.3, PositionUncertaintySuperior=0.3, PositionUncertaintyInferior=0.3, PositionUncertaintyLeft=0.3, PositionUncertaintyRight=0.3, DensityUncertainty=0.035, PositionUncertaintySetting="Universal", IndependentLeftRight=True, IndependentAnteriorPosterior=True, IndependentSuperiorInferior=True, ComputeExactScenarioDoses=False, NamesOfNonPlanningExaminations=[], PatientGeometryUncertaintyType="PerTreatmentCourse", PositionUncertaintyType="PerTreatmentCourse", TreatmentCourseScenariosFactor=1000, PositionUncertaintyList=None, PositionUncertaintyFormation="Automatic", RobustMethodPerTreatmentCourse="WeightedPowerMean")
+
 plan.PlanOptimizations[0].RunOptimization(ScalingOfSoftMachineConstraints=None)
 
 # if you want to keep it going:
@@ -67,13 +70,16 @@ for i in range(0,8):
 
     print(value_plan)
 
+retval_0 = beam_set.CreateRadiationSetScenarioGroup(Name="HN_STANDARD", UseIsotropicPositionUncertainty=False, PositionUncertaintySuperior=0.3, PositionUncertaintyInferior=0.3, PositionUncertaintyPosterior=0.3, PositionUncertaintyAnterior=0.3, PositionUncertaintyLeft=0.3, PositionUncertaintyRight=0.3, PositionUncertaintyFormation="AxesEndPoints", PositionUncertaintyList=None, DensityUncertaintyPercent=3.5, NumberOfDensityDiscretizationPoints=3, ShallAddScenariosOnPlanningExamination=True, NamesOfNonPlanningExaminations=[], ComputeScenarioDosesAfterGroupCreation=False, IncludeZeroPositionUncertainty=True)
+
+retval_0.ComputeScenarioGroupDoseValues()
 
 # create plan number 2 
 
 case = get_current("Case")
 examination = get_current("Examination")
 db = get_current("PatientDB")
-TemplateTreatmentOptimization_star = db.LoadTemplateOptimizationFunctions(templateName = 'STAR_HN', lockMode = 'Read')
+TemplateTreatmentOptimization_star = db.LoadTemplateOptimizationFunctions(templateName = 'STAR_ROBUST_PHYSTV', lockMode = 'Read')
 
 retval_0 = case.AddNewPlan(PlanName="STAR_HN", PlannedBy="POPPY_AUTO", Comment="", ExaminationName="CT 1", IsMedicalOncologyPlan=False, AllowDuplicateNames=False)
 retval_1 = retval_0.AddNewBeamSet(Name="STAR_HN", ExaminationName="CT 1", MachineName="Gantry 1", Modality="Protons", TreatmentTechnique="ProtonPencilBeamScanning", PatientPosition="HeadFirstSupine", NumberOfFractions=30, CreateSetupBeams=False, UseLocalizationPointAsSetupIsocenter=False, UseUserSelectedIsocenterSetupIsocenter=False, Comment="", RbeModelName="Constant 1.1", EnableDynamicTrackingForVero=False, NewDoseSpecificationPointNames=[], NewDoseSpecificationPoints=[], MotionSynchronizationTechniqueSettings={ 'DisplayName': None, 'MotionSynchronizationSettings': None, 'RespiratoryIntervalTime': None, 'RespiratoryPhaseGatingDutyCycleTimePercentage': None, 'MotionSynchronizationTechniqueType': "Undefined" }, Custom=None, ToleranceTableLabel=None)
@@ -99,6 +105,10 @@ beam_set.CreatePBSIonBeam(Name = "RAO", GantryAngle=335, CouchRotationAngle=0, A
 
 plan.PlanOptimizations[0].ResetOptimization()
 plan.PlanOptimizations[0].ApplyOptimizationTemplate(Template = TemplateTreatmentOptimization_star, AssociatedRoisAndPois={'STR_RAO': "STV_RAO", 'STV_LAO': "STV_LAO", 'STV_RPO': "STV_RPO", 'STV_LPO': "STV_LPO", 'BODY': "BODY", 'OTVHIGH': "OTVHIGH", 'OTVLOW': "OTVLOW", 'BRAINSTEM': "BRAINSTEM", 'CORD': "CORD", 'PAROTIDL': "PAROTIDL", 'PAROTIDR': "PAROTIDR" })
+
+plan.PlanOptimizations[0].OptimizationParameters.SaveRobustnessParameters(PositionUncertaintyAnterior=0.3, PositionUncertaintyPosterior=0.3, PositionUncertaintySuperior=0.3, PositionUncertaintyInferior=0.3, PositionUncertaintyLeft=0.3, PositionUncertaintyRight=0.3, DensityUncertainty=0.035, PositionUncertaintySetting="Universal", IndependentLeftRight=True, IndependentAnteriorPosterior=True, IndependentSuperiorInferior=True, ComputeExactScenarioDoses=False, NamesOfNonPlanningExaminations=[], PatientGeometryUncertaintyType="PerTreatmentCourse", PositionUncertaintyType="PerTreatmentCourse", TreatmentCourseScenariosFactor=1000, PositionUncertaintyList=None, PositionUncertaintyFormation="Automatic", RobustMethodPerTreatmentCourse="WeightedPowerMean")
+
+
 plan.PlanOptimizations[0].RunOptimization(ScalingOfSoftMachineConstraints=None)
 
 # if you want to keep it going:
@@ -110,3 +120,7 @@ beam_set.ComputeDose(ComputeBeamDoses=True, DoseAlgorithm="IonMonteCarlo", Force
 # calculate the final clinical goals 
 plan.TreatmentCourse.EvaluationSetup.ApplyClinicalGoalTemplate(Template = TemplateClinicalGoals, AssociatedRoisAndPois={ 'CTVHIGH': "PHYSTVHIGH", 'CTVLOW': "PHYSTVLOW", 'BRAINSTEM': "BRAINSTEM", 'CORD': "CORD", 'PAROTIDL': "PAROTIDL", 'PAROTIDR': "PAROTIDR" })
 
+
+retval_0 = beam_set.CreateRadiationSetScenarioGroup(Name="HN_STANDARD", UseIsotropicPositionUncertainty=False, PositionUncertaintySuperior=0.3, PositionUncertaintyInferior=0.3, PositionUncertaintyPosterior=0.3, PositionUncertaintyAnterior=0.3, PositionUncertaintyLeft=0.3, PositionUncertaintyRight=0.3, PositionUncertaintyFormation="AxesEndPoints", PositionUncertaintyList=None, DensityUncertaintyPercent=3.5, NumberOfDensityDiscretizationPoints=3, ShallAddScenariosOnPlanningExamination=True, NamesOfNonPlanningExaminations=[], ComputeScenarioDosesAfterGroupCreation=False, IncludeZeroPositionUncertainty=True)
+
+retval_0.ComputeScenarioGroupDoseValues()
